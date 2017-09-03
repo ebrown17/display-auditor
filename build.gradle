@@ -1,0 +1,28 @@
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'groovy'
+apply plugin: 'eclipse'
+
+repositories {
+  //
+  mavenCentral() 
+}
+
+dependencies {
+  // This dependency is found on compile classpath of this component and consumers.
+//  compile 'com.google.guava:guava:21.0'
+
+  compile 'com.google.protobuf:protobuf-java:3.3.1'
+  compile 'org.codehaus.groovy:groovy-all:2.4.12'
+  compile 'io.netty:netty-all:4.1.14.Final'
+  compile 'org.slf4j:slf4j-api:1.7.25'
+  compile 'ch.qos.logback:logback-classic:1.2.3'
+
+  testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
+  testCompile 'junit:junit:4.12'
+  
+  runtime files('config/logback.groovy')
+}
+
+mainClassName = 'App'
+
