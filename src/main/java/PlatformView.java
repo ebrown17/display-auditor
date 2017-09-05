@@ -2,6 +2,7 @@ import java.util.concurrent.TimeUnit;
 
 import data.Platform;
 import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
 import io.reactivex.schedulers.Schedulers;
 import javafx.scene.control.Label;
@@ -15,22 +16,13 @@ public class PlatformView {
 	private Label currentMsgTypeLabel;
 	private Label currentMsgTextLabel;
 	private Label currentMsgPlaytimeLabel;
+	private Disposable msgPlaySub;
 
 	public PlatformView(Platform platform) {
 		this.platformName = platform.getName();
 		this.stationName = platform.getStation();
 		this.platformId = platform.getPlatId();
 		generatePlatformLabels();
-		Observable.interval(1, TimeUnit.SECONDS, Schedulers.computation())
-		.switchMap( outer -> {
-			 Observable.interval(1, TimeUnit.SECONDS, Schedulers.computation())
-					.startWith(0L)
-					.observeOn(JavaFxScheduler.platform())
-					.doOnNext(l -> l.toString()).subscribe( t -> currentMsgPlaytimeLabel.setText(t.toString()));
-					
-					//Observable.from(l.toString())).observeOn(JavaFxScheduler.platform())
-		});
-        	
 	}
 
 	private void generatePlatformLabels() {
@@ -72,20 +64,30 @@ public class PlatformView {
 		this.platformNameLabel = platformNameLabel;
 	}
 
-	public void setCurrentMsgTypeLabel(Label currentMsgTypeLabel) {
+	public void setCurrentMsgType(Label currentMsgTypeLabel) {
 		this.currentMsgTypeLabel = currentMsgTypeLabel;
-
-		Observable.interval(1, TimeUnit.SECONDS, Schedulers.computation()).map(l -> l.toString())
-				.observeOn(JavaFxScheduler.platform()).subscribe(currentMsgPlaytimeLabel::setText);
 
 	}
 
-	public void setCurrentMsgTextLabel(Label currentMsgTextLabel) {
+	public void setCurrentMsgText(Label currentMsgTextLabel) {
 		this.currentMsgTextLabel = currentMsgTextLabel;
 	}
 
-	public void setCurrentMsgPlaytimeLabel(Label currentMsgPlaytimeLabel) {
-		this.currentMsgPlaytimeLabel = currentMsgPlaytimeLabel;
+	/**
+	 * If an observable interval is already counting the message playtime, it
+	 * will dispose of it and restart the interval.
+	 * 
+	 */
+	public void resetCurrentMsgPlaytime() {
+		if (msgPlaySub == null) {
+			msgPlaySub = Observable.interval(1, TimeUnit.SECONDS, Schedulers.computation()).map(l -> l.toString())
+					.observeOn(JavaFxScheduler.platform()).subscribe(currentMsgPlaytimeLabel::setText);
+		} else {
+			msgPlaySub.dispose();
+			msgPlaySub = Observable.interval(1, TimeUnit.SECONDS, Schedulers.computation()).map(l -> l.toString())
+					.delay(1, TimeUnit.SECONDS, Schedulers.io()).observeOn(JavaFxScheduler.platform())
+					.subscribe(currentMsgPlaytimeLabel::setText);
+		}
 	}
 
 }

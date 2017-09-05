@@ -41,6 +41,7 @@ public class App extends Application {
   private final static Logger logger = LoggerFactory.getLogger("App");
   private boolean fullScreen = false;
   private static ArrayList<GridPane> gridpanes = new ArrayList<GridPane>();
+  private static ArrayList<PlatformView> pv = new ArrayList<PlatformView>();
   private static ArrayList<Label> labeltest = new ArrayList<Label>();
   private Label testLab;
 
@@ -55,6 +56,27 @@ public class App extends Application {
       launch(args);
     };
     new Thread(runnable).start();
+    
+    try {
+		Thread.sleep(4000);
+	} catch (InterruptedException e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+	}
+    for(PlatformView pV : pv){
+		pV.resetCurrentMsgPlaytime();
+	}
+    while(true){
+    	try {
+			Thread.sleep(15000);
+			for(PlatformView pV : pv){
+				pV.resetCurrentMsgPlaytime();
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
  
     // new Thread(() -> { launch(args); }).start();
   }
@@ -92,10 +114,11 @@ public class App extends Application {
         grid.add(platV.getCurrentMsgTypeLabel(), 1, rowIndex);
         
         grid.add(platV.getCurrentMsgPlaytimeLabel(), 2, rowIndex++);
+        pv.add(platV);
       }
       grid.setStyle("-fx-background-color: FAE6F3; -fx-border-color: black;");
-
-
+      grid.setMinWidth(grid.getPrefWidth());
+      grid.setMinHeight(grid.getPrefHeight());
 
       JavaFxObservable.eventsOf(grid, MouseEvent.MOUSE_ENTERED)
           .map(me -> "-fx-background-color: ff9900; -fx-border-color: black;").subscribe(grid::setStyle);
