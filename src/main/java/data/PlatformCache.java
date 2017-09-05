@@ -1,13 +1,15 @@
+package data;
+
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 
-public enum Platforms {
+public enum PlatformCache {
 
   INSTANCE;
 
-  private Platforms() {
+  private PlatformCache() {
     buildPlatformCache();
   }
 
@@ -123,34 +125,6 @@ public enum Platforms {
   public Map<Integer, Platform> getPlatformCache(){
     return Collections.unmodifiableMap(platformCache);
   }
-  
-  public class Platform {
-    Integer platId;
-    String name, station;
 
-    public Platform(Integer platId, String name, String station) {
-      this.platId = platId;
-      this.name = name;
-      this.station = station;
-    }
-
-    public Integer getPlatId() {
-      return platId;
-    }
-
-    public String getName() {
-      return name;
-    }
-
-    public String getStation() {
-      return station;
-    }
-    
-    public String toString(){
-      return name;
-      
-    }
-
-  }
 
 }

@@ -6,9 +6,12 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import data.Platform;
+import data.StationCache;
 import io.reactivex.Observable;
 import io.reactivex.rxjavafx.observables.JavaFxObservable;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
+import io.reactivex.schedulers.Schedulers;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -42,9 +45,9 @@ public class App extends Application {
   private Label testLab;
 
   public static void main(String[] args) {
-    Map<String, ArrayList<Platforms.Platform>> stations = Stations.INSTANCE.getStationCache();
+    Map<String, ArrayList<Platform>> stations = StationCache.INSTANCE.getStationCache();
 
-    for (Map.Entry<String, ArrayList<Platforms.Platform>> station : stations.entrySet()) {
+    for (Map.Entry<String, ArrayList<Platform>> station : stations.entrySet()) {
       logger.info("Station: {} Platforms: {}", station.getKey(), station.getValue());
     }
 
@@ -52,19 +55,7 @@ public class App extends Application {
       launch(args);
     };
     new Thread(runnable).start();
-    Random rand = new Random();
-    try {
-      Thread.sleep(5000);
-      for(Label lab: labeltest){
-        Observable.interval(1, TimeUnit.SECONDS, JavaFxScheduler.platform()).map(l -> l.toString())
-        .subscribe(lab::setText);
-      }
-      
-
-    } catch (InterruptedException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+ 
     // new Thread(() -> { launch(args); }).start();
   }
 
@@ -77,11 +68,11 @@ public class App extends Application {
     tile.setHgap(4);
     tile.setPrefColumns(10);
 
-    Map<String, ArrayList<Platforms.Platform>> stations = Stations.INSTANCE.getStationCache();
+    Map<String, ArrayList<Platform>> stations = StationCache.INSTANCE.getStationCache();
 
-    for (Map.Entry<String, ArrayList<Platforms.Platform>> station : stations.entrySet()) {
+    for (Map.Entry<String, ArrayList<Platform>> station : stations.entrySet()) {
       logger.info("Station: {} Platforms: {}", station.getKey(), station.getValue());
-
+                
       GridPane grid = new GridPane();
       Text scenetitle = new Text(station.getKey());
       scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
@@ -93,13 +84,14 @@ public class App extends Application {
       grid.add(hbBtn, 0, 0, 3, 1);
       int rowIndex = 1;
 
-      for (Platforms.Platform platform : station.getValue()) {
-        grid.add(new Label(platform.getName()), 0, rowIndex);
-        grid.add(new Label("Arrival"), 1, rowIndex);
-        testLab = new Label("15");
-        labeltest.add(testLab);
-        // JavaFxObservable.valuesOf(testLab.textProperty()).subscribe(t -> testLab.setText(t) );
-        grid.add(testLab, 2, rowIndex++);
+      for (Platform platform : station.getValue()) {
+    	  
+    	  PlatformView platV = new PlatformView(platform);
+    	  
+        grid.add(platV.getPlatformNameLabel(), 0, rowIndex);
+        grid.add(platV.getCurrentMsgTypeLabel(), 1, rowIndex);
+        
+        grid.add(platV.getCurrentMsgPlaytimeLabel(), 2, rowIndex++);
       }
       grid.setStyle("-fx-background-color: FAE6F3; -fx-border-color: black;");
 
