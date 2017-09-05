@@ -1,9 +1,14 @@
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.reactivex.Observable;
+import io.reactivex.rxjavafx.observables.JavaFxObservable;
+import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -32,7 +37,9 @@ public class App extends Application {
 
   private final static Logger logger = LoggerFactory.getLogger("App");
   private boolean fullScreen = false;
-  private ArrayList<GridPane> gridpanes = new ArrayList<GridPane>();
+  private static ArrayList<GridPane> gridpanes = new ArrayList<GridPane>();
+  private static ArrayList<Label> labeltest = new ArrayList<Label>();
+  private Label testLab;
 
   public static void main(String[] args) {
     Map<String, ArrayList<Platforms.Platform>> stations = Stations.INSTANCE.getStationCache();
@@ -41,8 +48,24 @@ public class App extends Application {
       logger.info("Station: {} Platforms: {}", station.getKey(), station.getValue());
     }
 
-    launch(args);
+    Runnable runnable = () -> {
+      launch(args);
+    };
+    new Thread(runnable).start();
+    Random rand = new Random();
+    try {
+      Thread.sleep(5000);
+      for(Label lab: labeltest){
+        Observable.interval(1, TimeUnit.SECONDS, JavaFxScheduler.platform()).map(l -> l.toString())
+        .subscribe(lab::setText);
+      }
+      
 
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    // new Thread(() -> { launch(args); }).start();
   }
 
   @Override
@@ -53,6 +76,7 @@ public class App extends Application {
     tile.setVgap(4);
     tile.setHgap(4);
     tile.setPrefColumns(10);
+
     Map<String, ArrayList<Platforms.Platform>> stations = Stations.INSTANCE.getStationCache();
 
     for (Map.Entry<String, ArrayList<Platforms.Platform>> station : stations.entrySet()) {
@@ -68,65 +92,64 @@ public class App extends Application {
       grid.setVgap(10);
       grid.add(hbBtn, 0, 0, 3, 1);
       int rowIndex = 1;
-      for(Platforms.Platform platform: station.getValue()){
+
+      for (Platforms.Platform platform : station.getValue()) {
         grid.add(new Label(platform.getName()), 0, rowIndex);
-        grid.add(new Label("Arrival"),    1, rowIndex);
-        grid.add(new Label("15"),         2, rowIndex++);
-      }     
-      
-      
+        grid.add(new Label("Arrival"), 1, rowIndex);
+        testLab = new Label("15");
+        labeltest.add(testLab);
+        // JavaFxObservable.valuesOf(testLab.textProperty()).subscribe(t -> testLab.setText(t) );
+        grid.add(testLab, 2, rowIndex++);
+      }
       grid.setStyle("-fx-background-color: FAE6F3; -fx-border-color: black;");
-      Pane pane = new Pane();
-      pane.setOnMouseEntered(e -> {
-        grid.setStyle("-fx-background-color: ff9900; -fx-border-color: black;");
-        
-      });
-      pane.setOnMouseExited((MouseEvent e) -> {
-        grid.setStyle("-fx-background-color: FAE6F3; -fx-border-color: black;");
-      });
-      pane.setOnMouseClicked((MouseEvent e) -> {
-        primaryStage.setFullScreen(fullScreen = !fullScreen);
-        if (fullScreen) {
-          for (GridPane p : gridpanes) {
-            if (grid != p) {
-              tile.getChildren().remove(p);
-            }
-          }
-          Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
-          grid.setMinWidth(bounds.getMaxX());
-          grid.setMinHeight(bounds.getMaxY());
-          pane.setMinWidth(bounds.getMaxX());
-          pane.setMinHeight(bounds.getMaxY());
 
-        }
-        else {
-          tile.getChildren().remove(grid);
-          pane.setMinWidth(pane.getPrefWidth());
-          pane.setMinHeight(pane.getPrefHeight());
-          for (GridPane p : gridpanes) {
-            p.setMinWidth(p.getPrefWidth());
-            p.setMinHeight(p.getPrefHeight());
-            tile.getChildren().add(p);
-          }
 
-        }
-      });
-     
-      grid.add(pane, 0, 0, 3, 3);
+
+      JavaFxObservable.eventsOf(grid, MouseEvent.MOUSE_ENTERED)
+          .map(me -> "-fx-background-color: ff9900; -fx-border-color: black;").subscribe(grid::setStyle);
+
+      JavaFxObservable.eventsOf(grid, MouseEvent.MOUSE_EXITED)
+          .map(me -> "-fx-background-color: FAE6F3; -fx-border-color: black;").subscribe(grid::setStyle);
+
+      JavaFxObservable.eventsOf(grid, MouseEvent.MOUSE_CLICKED).subscribe(me -> test(primaryStage, tile, grid));
 
       gridpanes.add(grid);
 
       tile.getChildren().add(grid);
-    
-      
+
     }
 
     Scene scene = new Scene(tile, tile.getPrefWidth(), tile.getPrefHeight());
     primaryStage.setScene(scene);
-
+    primaryStage.centerOnScreen();
     primaryStage.show();
   }
 
-  
+  private void test(Stage primaryStage, TilePane tile, GridPane grid) {
+    primaryStage.setFullScreen(fullScreen = !fullScreen);
+    if (fullScreen) {
+      for (GridPane p : gridpanes) {
+        if (grid != p) {
+          tile.getChildren().remove(p);
+        }
+      }
+      Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
+      grid.setMinWidth(bounds.getMaxX());
+      grid.setMinHeight(bounds.getMaxY());
+
+    }
+    else {
+      tile.getChildren().remove(grid);
+      for (GridPane p : gridpanes) {
+        p.setMinWidth(p.getPrefWidth());
+        p.setMinHeight(p.getPrefHeight());
+        tile.getChildren().add(p);
+      }
+
+    }
+    primaryStage.centerOnScreen();
+  }
+
+
 }
 
