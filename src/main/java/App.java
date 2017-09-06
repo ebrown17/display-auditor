@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 
 import data.Platform;
 import data.StationCache;
+import fxviews.PlatformView;
+import fxviews.StationView;
 import io.reactivex.Observable;
 import io.reactivex.rxjavafx.observables.JavaFxObservable;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
@@ -25,6 +27,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -48,30 +52,43 @@ public class App extends Application {
   public static void main(String[] args) {
     Map<String, ArrayList<Platform>> stations = StationCache.INSTANCE.getStationCache();
 
-    for (Map.Entry<String, ArrayList<Platform>> station : stations.entrySet()) {
+   /* for (Map.Entry<String, ArrayList<Platform>> station : stations.entrySet()) {
       logger.info("Station: {} Platforms: {}", station.getKey(), station.getValue());
-    }
+    }*/
 
     Runnable runnable = () -> {
       launch(args);
     };
     new Thread(runnable).start();
-    
+    logger.info("Thread started");
     try {
 		Thread.sleep(4000);
 	} catch (InterruptedException e1) {
 		// TODO Auto-generated catch block
 		e1.printStackTrace();
 	}
-    for(PlatformView pV : pv){
+    for(PlatformView pV : pv){      
 		pV.resetCurrentMsgPlaytime();
+		pV.setCurrentMsgText("THIS IS A TEST MESSAGE\nTHIS IS A TEST MESSAGE\n");
 	}
-    while(true){
+    int count = 0;
+    while(count < 20){
     	try {
-			Thread.sleep(15000);
+			Thread.sleep(10000);
 			for(PlatformView pV : pv){
 				pV.resetCurrentMsgPlaytime();
+				if(count %3 == 0){
+				  pV.setCurrentMsgText("This is a long message test that should disappear from page and not wrap");  
+				}
+				else if(count %2 == 0){
+                  pV.setCurrentMsgText("Display Test: Showing \nHow a multi line\nwill look to the user");  
+                }
+				else{
+				  pV.setCurrentMsgText("THIS IS A TEST MESSAGE\nTHIS IS A TEST MESSAGE\n");
+				}
+				
 			}
+			count++;
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -84,60 +101,36 @@ public class App extends Application {
   @Override
   public void start(Stage primaryStage) {
     primaryStage.setTitle("Tile Pane Test");
-    TilePane tile = new TilePane();
+   /* TilePane tile = new TilePane();
+    tile.setPrefColumns(8);*/
+    FlowPane tile = new FlowPane();
+   // tile.setPrefWrapLength(1920);
     tile.setPadding(new Insets(5, 5, 5, 5));
-    tile.setVgap(4);
-    tile.setHgap(4);
-    tile.setPrefColumns(10);
+    tile.setVgap(5);
+    tile.setHgap(5);
+    tile.setStyle("-fx-background-color: darkslategrey;");
 
     Map<String, ArrayList<Platform>> stations = StationCache.INSTANCE.getStationCache();
 
     for (Map.Entry<String, ArrayList<Platform>> station : stations.entrySet()) {
       logger.info("Station: {} Platforms: {}", station.getKey(), station.getValue());
-                
-      GridPane grid = new GridPane();
-      Text scenetitle = new Text(station.getKey());
-      scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
-      HBox hbBtn = new HBox();
-      hbBtn.setAlignment(Pos.CENTER);
-      hbBtn.getChildren().add(scenetitle);
-      grid.setHgap(10);
-      grid.setVgap(10);
-      grid.add(hbBtn, 0, 0, 3, 1);
-      int rowIndex = 1;
-
-      for (Platform platform : station.getValue()) {
-    	  
-    	  PlatformView platV = new PlatformView(platform);
-    	  
-        grid.add(platV.getPlatformNameLabel(), 0, rowIndex);
-        grid.add(platV.getCurrentMsgTypeLabel(), 1, rowIndex);
-        
-        grid.add(platV.getCurrentMsgPlaytimeLabel(), 2, rowIndex++);
-        pv.add(platV);
-      }
-      grid.setStyle("-fx-background-color: FAE6F3; -fx-border-color: black;");
-      grid.setMinWidth(grid.getPrefWidth());
-      grid.setMinHeight(grid.getPrefHeight());
-
-      JavaFxObservable.eventsOf(grid, MouseEvent.MOUSE_ENTERED)
-          .map(me -> "-fx-background-color: ff9900; -fx-border-color: black;").subscribe(grid::setStyle);
-
-      JavaFxObservable.eventsOf(grid, MouseEvent.MOUSE_EXITED)
-          .map(me -> "-fx-background-color: FAE6F3; -fx-border-color: black;").subscribe(grid::setStyle);
-
-      JavaFxObservable.eventsOf(grid, MouseEvent.MOUSE_CLICKED).subscribe(me -> test(primaryStage, tile, grid));
-
-      gridpanes.add(grid);
-
-      tile.getChildren().add(grid);
-
+      
+      StationView stationView = new StationView(station.getKey(),station.getValue());
+      
+      gridpanes.add(stationView.getStationView());
+      pv.addAll(stationView.getPlatformViews());
+      
+      tile.getChildren().add(stationView.getStationView());
     }
-
-    Scene scene = new Scene(tile, tile.getPrefWidth(), tile.getPrefHeight());
+    
+    Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
+    Scene scene = new Scene(tile, primaryScreenBounds.getWidth(), primaryScreenBounds.getHeight());
     primaryStage.setScene(scene);
     primaryStage.centerOnScreen();
     primaryStage.show();
+    
+    JavaFxObservable.eventsOf(tile, MouseEvent.MOUSE_CLICKED).subscribe(me -> primaryStage.setFullScreen(fullScreen= !fullScreen));
+    
   }
 
   private void test(Stage primaryStage, TilePane tile, GridPane grid) {

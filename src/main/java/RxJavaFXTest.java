@@ -58,7 +58,7 @@ public class RxJavaFXTest extends Application {
 		Map<String, ArrayList<Platform>> stations = StationCache.INSTANCE.getStationCache();
 
 		Observable<Entry<String, ArrayList<Platform>>> source2 = Observable.fromIterable(stations.entrySet());
-
+		
 		source2.subscribe((station) -> logger.info("Station: {} Platforms: {}", station.getKey(), station.getValue()));
 
 		Observable<Integer> source = Observable.range(1, 5).subscribeOn(Schedulers.newThread());
