@@ -1,9 +1,13 @@
 package data;
 
+import fxviews.PlatformView;
+import fxviews.StationView;
 
 public class Platform {
 	Integer platId;
 	String name, station;
+	PlatformView platformView;
+	StationView stationView;	
 
 	public Platform(Integer platId, String name, String station) {
 		this.platId = platId;
@@ -25,7 +29,18 @@ public class Platform {
 
 	public String toString() {
 		return name;
-
+	}
+	
+	public PlatformView getPlatformView(){
+		return platformView;
+	}
+	
+	public void setPlatformView(PlatformView platformView){
+		this.platformView = platformView;
 	}
 
+	protected void setStationView(StationView stationView){
+		this.stationView = stationView;
+	}
+	
 }

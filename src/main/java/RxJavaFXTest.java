@@ -1,16 +1,7 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import data.Platform;
-import data.StationCache;
 import io.reactivex.Observable;
-import io.reactivex.Single;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.rxjavafx.observables.JavaFxObservable;
 import io.reactivex.rxjavafx.observers.JavaFxObserver;
@@ -19,8 +10,6 @@ import io.reactivex.schedulers.Schedulers;
 import javafx.application.Application;
 import javafx.beans.binding.Binding;
 import javafx.event.ActionEvent;
-import javafx.event.EventType;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -30,7 +19,6 @@ import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -54,8 +42,8 @@ public class RxJavaFXTest extends Application {
 		new Thread(() -> {
 			launch(args);
 		}).start();
-
-		Map<String, ArrayList<Platform>> stations = StationCache.INSTANCE.getStationCache();
+/*
+		//Map<String, ArrayList<Platform>> stations = StationPlatformAndViewCache.INSTANCE.getStationCache();
 
 		Observable<Entry<String, ArrayList<Platform>>> source2 = Observable.fromIterable(stations.entrySet());
 		
@@ -71,7 +59,7 @@ public class RxJavaFXTest extends Application {
 
 		Single<List<String>> test = Observable.just("Alpha", "Beta", "Gamma", "Delta", "Epsilon").delay(3, TimeUnit.SECONDS, Schedulers.io()).toList();
 
-		test.observeOn(JavaFxScheduler.platform()).subscribe(list -> listView.getItems().setAll(list));
+		test.observeOn(JavaFxScheduler.platform()).subscribe(list -> listView.getItems().setAll(list));*/
 
 		
 
