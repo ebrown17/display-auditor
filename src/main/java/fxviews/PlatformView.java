@@ -11,6 +11,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.rxjavafx.observables.JavaFxObservable;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
 import io.reactivex.schedulers.Schedulers;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ContentDisplay;
@@ -52,11 +53,11 @@ public class PlatformView {
 		platformNameLabel = new Label(platformName);
 		platformNameLabel.setPadding(new Insets(0, 0, 0, 2));
 		
-		currentMsgTypeLabel = new Label("Uknown");
+		currentMsgTypeLabel = new Label("BOARDING_ADVICE");
 		currentMsgTypeLabel.setPadding(new Insets(0, 0, 0, 5));
 		currentMsgTypeLabel.setMinWidth(145);
 		currentMsgTypeLabel.setMaxWidth(145);
-		currentMsgTypeLabel.setAlignment(Pos.CENTER);
+		currentMsgTypeLabel.setAlignment(Pos.CENTER_LEFT);
 		
 
 		currentMsgToolTip = new Tooltip("");
@@ -65,23 +66,26 @@ public class PlatformView {
 		currentMsgTextLabel.setTooltip(currentMsgToolTip);	
 
 		currentMsgTextLabel.setFont(Font.font("Arial", FontWeight.SEMI_BOLD, 10));
-		currentMsgTextLabel.setTextFill(Color.RED);
-
-		currentMsgTextBox.setAlignment(Pos.CENTER);
+		currentMsgTextLabel.setTextFill(Color.RED);		
+		currentMsgTextBox.setAlignment(Pos.CENTER_LEFT);
+		
+		
 		currentMsgTextBox.getChildren().add(currentMsgTextLabel);
+		
 		currentMsgTextBox.setMinHeight(60);
 		currentMsgTextBox.setMaxHeight(60);
-		currentMsgTextBox.setMinWidth(235);
-		currentMsgTextBox.setMaxWidth(235);
+		currentMsgTextBox.setMinWidth(180);
+		currentMsgTextBox.setMaxWidth(180);
 		currentMsgTextBox
-				.setStyle("-fx-background-color: black;-fx-border-color: skyblue;-fx-border-width:2;-fx-padding:2;");
-
+				.setStyle("-fx-background-color: black;-fx-border-color: black;-fx-border-width:2;");
+		
 		JavaFxObservable.eventsOf(currentMsgTextLabel, MouseEvent.MOUSE_ENTERED).subscribeOn(Schedulers.computation())
 				.map(me -> currentMsgTextLabel.getText()).observeOn(JavaFxScheduler.platform())
 				.subscribe(currentMsgToolTip::setText);
 
-		currentMsgPlaytimeLabel = new Label("0");
+		currentMsgPlaytimeLabel = new Label("500000");
 		currentMsgPlaytimeLabel.setMinWidth(50);
+		currentMsgPlaytimeLabel.setMaxWidth(50);
 		currentMsgPlaytimeLabel.setAlignment(Pos.CENTER_RIGHT);
 	}
 

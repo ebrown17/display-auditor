@@ -9,6 +9,7 @@ import data.Platform;
 import io.reactivex.rxjavafx.observables.JavaFxObservable;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
 import io.reactivex.schedulers.Schedulers;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.input.MouseEvent;
@@ -53,14 +54,16 @@ public class StationView {
     HBox hbBtn = new HBox();
     hbBtn.setAlignment(Pos.CENTER);
     hbBtn.getChildren().add(stationTitle);
-    hbBtn.setPadding(new Insets(0, 0, -5, 0));
+    hbBtn.setPadding(new Insets(0, 0, -5, 5));
     stationView.add(hbBtn, 0, 0, 3, 1);
+    GridPane.setHalignment(hbBtn, HPos.CENTER);
     int rowIndex = 1;
     for (PlatformView platView : stationPlatformViews) {
       stationView.add(platView.getPlatformNameLabel(), 0, rowIndex);
       stationView.add(platView.getCurrentMsgTypeLabel(), 1, rowIndex);
       stationView.add(platView.getCurrentMsgPlaytimeLabel(), 2, rowIndex++);
       stationView.add(platView.getCurrentMsgTextBox(), 0, rowIndex++, 3, 1);
+      GridPane.setHalignment(platView.getCurrentMsgTextBox(), HPos.CENTER);
     }
     stationView.setStyle("-fx-background-color: skyblue ; -fx-border-color: black; -fx-border-radius: 5.0;-fx-background-radius: 5.0;");
     // stationView.setGridLinesVisible(true);
