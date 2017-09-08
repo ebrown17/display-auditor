@@ -11,19 +11,15 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.rxjavafx.observables.JavaFxObservable;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
 import io.reactivex.schedulers.Schedulers;
-import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.scene.text.TextAlignment;
 
 public class PlatformView {
 	private final static Logger logger = LoggerFactory.getLogger("StationView");
@@ -53,7 +49,7 @@ public class PlatformView {
 		platformNameLabel = new Label(platformName);
 		platformNameLabel.setPadding(new Insets(0, 0, 0, 2));
 		
-		currentMsgTypeLabel = new Label("BOARDING_ADVICE");
+		currentMsgTypeLabel = new Label("Uknown");
 		currentMsgTypeLabel.setPadding(new Insets(0, 0, 0, 5));
 		currentMsgTypeLabel.setMinWidth(145);
 		currentMsgTypeLabel.setMaxWidth(145);
@@ -67,7 +63,7 @@ public class PlatformView {
 
 		currentMsgTextLabel.setFont(Font.font("Arial", FontWeight.SEMI_BOLD, 10));
 		currentMsgTextLabel.setTextFill(Color.RED);		
-		currentMsgTextBox.setAlignment(Pos.CENTER_LEFT);
+		currentMsgTextBox.setAlignment(Pos.CENTER);
 		
 		
 		currentMsgTextBox.getChildren().add(currentMsgTextLabel);
@@ -83,7 +79,7 @@ public class PlatformView {
 				.map(me -> currentMsgTextLabel.getText()).observeOn(JavaFxScheduler.platform())
 				.subscribe(currentMsgToolTip::setText);
 
-		currentMsgPlaytimeLabel = new Label("500000");
+		currentMsgPlaytimeLabel = new Label("0");
 		currentMsgPlaytimeLabel.setMinWidth(50);
 		currentMsgPlaytimeLabel.setMaxWidth(50);
 		currentMsgPlaytimeLabel.setAlignment(Pos.CENTER_RIGHT);
@@ -131,7 +127,6 @@ public class PlatformView {
 	}
 
 	public void setCurrentMsgText(String currentMsgText) {
-//		Observable<String> observer = Observable.just(currentMsgText);
 		Observable.just(currentMsgText).subscribeOn(Schedulers.computation()).observeOn(JavaFxScheduler.platform())
 				.subscribe(currentMsgTextLabel::setText);
 

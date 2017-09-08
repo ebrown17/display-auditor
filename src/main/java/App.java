@@ -1,9 +1,7 @@
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.slf4j.Logger;
@@ -21,7 +19,6 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -32,7 +29,6 @@ import javafx.stage.Stage;
 import protobuf.JdssAuditor;
 import protobuf.JdssAuditor.DisplayData.AuditorMessageType;
 import protobuf.JdssAuditor.DisplayData.Eta;
-import protobuf.JdssAuditor.DisplayData.ShortEta;
 import server.Server;
 
 public class App extends Application {
@@ -65,6 +61,9 @@ public class App extends Application {
     } catch (Exception e) {
       e.printStackTrace();
     }
+    
+    
+    
 
     Map<Integer, Platform> platformCache = StationPlatformAndViewCache.INSTANCE.getPlatformCache();
 
@@ -80,64 +79,87 @@ public class App extends Application {
         switch (type) {
           case BOARDING_ADVICE:
 
-            Observable.just(type).map(msgType -> msgType.toString()).subscribeOn(Schedulers.computation())
+           /* Observable.just(type).map(msgType -> msgType.toString()).subscribeOn(Schedulers.computation())
                 .observeOn(JavaFxScheduler.platform()).subscribe(platform::setCurrentMsgType);
 
             Observable.just(message.getBoardingAdvice().getAdvice()).subscribeOn(Schedulers.computation())
-                .observeOn(JavaFxScheduler.platform()).subscribe(platform::setCurrentMsgText);
+                .observeOn(JavaFxScheduler.platform()).subscribe(platform::setCurrentMsgText);*/
+        	  
+        	  platform.setCurrentMsgType(type.toString());
+        	  platform.setCurrentMsgText(message.getBoardingAdvice().getAdvice());
 
             break;
           case SHORT_ETA:
 
-            Observable.just(type).map(msgType -> msgType.toString()).subscribeOn(Schedulers.computation())
+           /* Observable.just(type).map(msgType -> msgType.toString()).subscribeOn(Schedulers.computation())
                 .observeOn(JavaFxScheduler.platform()).subscribe(platform::setCurrentMsgType);
 
             Observable.just(message.getShortEta().getShortEtaList()).map(etaMsg -> buildEtaMsg(etaMsg))
                 .subscribeOn(Schedulers.computation()).observeOn(JavaFxScheduler.platform())
-                .subscribe(platform::setCurrentMsgText);
+                .subscribe(platform::setCurrentMsgText);*/
+        	  
+            platform.setCurrentMsgType(type.toString());
+      	  platform.setCurrentMsgText(buildEtaMsg(message.getShortEta().getShortEtaList()));
+            
             break;
           case FULL_ETA:
-            Observable.just(type).map(msgType -> msgType.toString()).subscribeOn(Schedulers.computation())
+            /*Observable.just(type).map(msgType -> msgType.toString()).subscribeOn(Schedulers.computation())
                 .observeOn(JavaFxScheduler.platform()).subscribe(platform::setCurrentMsgType);
 
             Observable.just(message.getFullEta().getFullEtaList()).map(etaMsg -> buildEtaMsg(etaMsg))
                 .subscribeOn(Schedulers.computation()).observeOn(JavaFxScheduler.platform())
-                .subscribe(platform::setCurrentMsgText);
+                .subscribe(platform::setCurrentMsgText);*/
+            
+            platform.setCurrentMsgType(type.toString());
+        	  platform.setCurrentMsgText(buildEtaMsg(message.getFullEta().getFullEtaList()));
             break;
           case DESTINATION:
-            Observable.just(type).map(msgType -> msgType.toString()).subscribeOn(Schedulers.computation())
+            /*Observable.just(type).map(msgType -> msgType.toString()).subscribeOn(Schedulers.computation())
                 .observeOn(JavaFxScheduler.platform()).subscribe(platform::setCurrentMsgType);
 
             Observable.just(message.getDestination().getDestination()).subscribeOn(Schedulers.computation())
-                .observeOn(JavaFxScheduler.platform()).subscribe(platform::setCurrentMsgText);
+                .observeOn(JavaFxScheduler.platform()).subscribe(platform::setCurrentMsgText);*/
+            
+            platform.setCurrentMsgType(type.toString());
+      	  platform.setCurrentMsgText(message.getDestination().getDestination());
+            
             break;
           case NEXT_TRAIN:
-            Observable.just(type).map(msgType -> msgType.toString()).subscribeOn(Schedulers.computation())
+            /*Observable.just(type).map(msgType -> msgType.toString()).subscribeOn(Schedulers.computation())
                 .observeOn(JavaFxScheduler.platform()).subscribe(platform::setCurrentMsgType);
 
             Observable.just(message.getNextTrain().getNextTrain()).subscribeOn(Schedulers.computation())
-                .observeOn(JavaFxScheduler.platform()).subscribe(platform::setCurrentMsgText);
+                .observeOn(JavaFxScheduler.platform()).subscribe(platform::setCurrentMsgText);*/
             break;
           case SCROLL_INFO:
-            Observable.just(type).map(msgType -> msgType.toString()).subscribeOn(Schedulers.computation())
+            /*Observable.just(type).map(msgType -> msgType.toString()).subscribeOn(Schedulers.computation())
                 .observeOn(JavaFxScheduler.platform()).subscribe(platform::setCurrentMsgType);
 
             Observable.just(message.getScrollInfo().getScrollingMessage()).subscribeOn(Schedulers.computation())
-                .observeOn(JavaFxScheduler.platform()).subscribe(platform::setCurrentMsgText);
+                .observeOn(JavaFxScheduler.platform()).subscribe(platform::setCurrentMsgText);*/
+            
+            platform.setCurrentMsgType(type.toString());
+        	  platform.setCurrentMsgText(message.getScrollInfo().getScrollingMessage());
+            
             break;
           case TIME:
-            Observable.just(type).map(msgType -> msgType.toString()).subscribeOn(Schedulers.computation())
+        	  platform.setCurrentMsgType(type.toString());
+        	  platform.setCurrentMsgText(message.getTime().getTime());
+          /*  Observable.just(type).map(msgType -> msgType.toString()).subscribeOn(Schedulers.computation())
                 .observeOn(JavaFxScheduler.platform()).subscribe(platform::setCurrentMsgType);
 
             Observable.just(message.getTime().getTime()).subscribeOn(Schedulers.computation())
-                .observeOn(JavaFxScheduler.platform()).subscribe(platform::setCurrentMsgText);
+                .observeOn(JavaFxScheduler.platform()).subscribe(platform::setCurrentMsgText);*/
             break;
           case INFO:
-            Observable.just(type).map(msgType -> msgType.toString()).subscribeOn(Schedulers.computation())
+            /*Observable.just(type).map(msgType -> msgType.toString()).subscribeOn(Schedulers.computation())
                 .observeOn(JavaFxScheduler.platform()).subscribe(platform::setCurrentMsgType);
 
             Observable.just(message.getInfo().getInfo()).subscribeOn(Schedulers.computation())
-                .observeOn(JavaFxScheduler.platform()).subscribe(platform::setCurrentMsgText);
+                .observeOn(JavaFxScheduler.platform()).subscribe(platform::setCurrentMsgText);*/
+            
+            platform.setCurrentMsgType(type.toString());
+      	  platform.setCurrentMsgText(message.getInfo().getInfo());
             break;
           case OUT_OF_SERVICE:
             Observable.just(type).map(msgType -> msgType.toString()).subscribeOn(Schedulers.computation())
@@ -191,7 +213,7 @@ public class App extends Application {
       pv.addAll(stationView.getPlatformViews());
 
       tile.getChildren().add(stationView.getStationView());
-      stationView.getStationView().setGridLinesVisible(true);
+     // stationView.getStationView().setGridLinesVisible(true);
     }
 
     Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
@@ -211,7 +233,14 @@ public class App extends Application {
 
   private void shutdownApp() {
     server.shutdownServer();
-    System.exit(0);
+    try {
+		Thread.sleep(3000);
+		System.exit(0);
+	} catch (InterruptedException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+    
   }
 
 
