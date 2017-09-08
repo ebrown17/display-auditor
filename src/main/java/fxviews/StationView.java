@@ -56,16 +56,19 @@ public class StationView {
     stationView.add(hbBtn, 0, 0, 3, 1);
     GridPane.setHalignment(hbBtn, HPos.CENTER);
     int rowIndex = 1;
+    int colSpan = 0;
     for (PlatformView platView : stationPlatformViews) {
-      stationView.add(platView.getPlatformNameLabel(), 0, rowIndex);
-      stationView.add(platView.getCurrentMsgTypeLabel(), 1, rowIndex);
-      stationView.add(platView.getCurrentMsgPlaytimeLabel(), 2, rowIndex++);
-      stationView.add(platView.getCurrentMsgTextBox(), 0, rowIndex++, 3, 1);
+    	if(rowIndex >4){colSpan=3; rowIndex=1;}
+      stationView.add(platView.getPlatformNameLabel(), 0+colSpan, rowIndex);
+      stationView.add(platView.getCurrentMsgTypeLabel(), 1+colSpan, rowIndex);
+      stationView.add(platView.getCurrentMsgPlaytimeLabel(), 2+colSpan, rowIndex++);
+      stationView.add(platView.getCurrentMsgTextBox(), 0+colSpan, rowIndex++, 3, 1);
       GridPane.setHalignment(platView.getCurrentMsgTextBox(), HPos.CENTER);
     }
-    
+    stationView.setPadding(new Insets(5, 5, 5, 5));
     stationView.setStyle("-fx-background-color: skyblue ; -fx-border-color: black; -fx-border-radius: 5.0;-fx-background-radius: 5.0;");
-    // stationView.setGridLinesVisible(true);
+    stationView.setHgap(5);
+    //stationView.setGridLinesVisible(true);
     JavaFxObservable.eventsOf(stationView, MouseEvent.MOUSE_ENTERED)
         .map(me -> "-fx-background-color: f08080; -fx-border-color: black; -fx-border-radius: 5.0;-fx-background-radius: 5.0;").observeOn(JavaFxScheduler.platform())
         .subscribe(stationView::setStyle);

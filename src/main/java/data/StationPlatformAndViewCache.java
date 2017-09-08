@@ -20,7 +20,7 @@ public enum StationPlatformAndViewCache {
 
 	private final Map<Integer, Platform> platformCache = new LinkedHashMap<Integer, Platform>();
 	private final Map<String, ArrayList<Platform>> stationCache = new LinkedHashMap<String, ArrayList<Platform>>();
-	private final List<StationView> stationViewCache = new ArrayList<StationView>();
+	private final Map<String,StationView> stationViewCache = new LinkedHashMap<String,StationView>();
 
 	private void buildPlatformCache() {
 		platformCache.put(1, new Platform(1, "M90-1", "M90"));
@@ -152,7 +152,7 @@ public enum StationPlatformAndViewCache {
 				platform.setStationView(stationView);
 			}
 			
-			stationViewCache.add(stationView);
+			stationViewCache.put(station.getKey(),stationView);
 		}
 	}
 
@@ -164,7 +164,7 @@ public enum StationPlatformAndViewCache {
 		return Collections.unmodifiableMap(stationCache);
 	}
 
-	public List<StationView> getStationViewCache() {
+	public Map<String,StationView> getStationViewCache() {
 		return stationViewCache;
 	}
 
