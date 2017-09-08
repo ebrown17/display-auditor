@@ -26,13 +26,11 @@ public class StationView {
 	private final String stationName;
 	private final ArrayList<Platform> stationPlatforms;
 	private ArrayList<PlatformView> stationPlatformViews = new ArrayList<PlatformView>();
-	// private final Label stationNameLabel;
 	private GridPane stationView;
 
 	public StationView(String stationName, ArrayList<Platform> stationPlatforms) {
 		this.stationName = stationName;
 		this.stationPlatforms = stationPlatforms;
-		// this.stationNameLabel = new Label(stationName);
 		buildStationPlatformViews();
 		buildStationView();
 	}
@@ -65,13 +63,14 @@ public class StationView {
       stationView.add(platView.getCurrentMsgTextBox(), 0, rowIndex++, 3, 1);
       GridPane.setHalignment(platView.getCurrentMsgTextBox(), HPos.CENTER);
     }
+    
     stationView.setStyle("-fx-background-color: skyblue ; -fx-border-color: black; -fx-border-radius: 5.0;-fx-background-radius: 5.0;");
     // stationView.setGridLinesVisible(true);
-    JavaFxObservable.eventsOf(stationView, MouseEvent.MOUSE_ENTERED).subscribeOn(Schedulers.computation())
+    JavaFxObservable.eventsOf(stationView, MouseEvent.MOUSE_ENTERED)
         .map(me -> "-fx-background-color: f08080; -fx-border-color: black; -fx-border-radius: 5.0;-fx-background-radius: 5.0;").observeOn(JavaFxScheduler.platform())
         .subscribe(stationView::setStyle);
 
-    JavaFxObservable.eventsOf(stationView, MouseEvent.MOUSE_EXITED).subscribeOn(Schedulers.computation())
+    JavaFxObservable.eventsOf(stationView, MouseEvent.MOUSE_EXITED)
         .map(me -> "-fx-background-color: skyblue; -fx-border-color: black; -fx-border-radius: 5.0;-fx-background-radius: 5.0;").observeOn(JavaFxScheduler.platform())
         .subscribe(stationView::setStyle);
 
