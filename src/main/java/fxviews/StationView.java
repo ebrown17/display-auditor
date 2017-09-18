@@ -12,6 +12,7 @@ import io.reactivex.schedulers.Schedulers;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -21,69 +22,96 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
 public class StationView {
-	private final static Logger logger = LoggerFactory.getLogger("StationView");
+  private final static Logger logger = LoggerFactory.getLogger("StationView");
 
-	private final String stationName;
-	private final ArrayList<Platform> stationPlatforms;
-	private ArrayList<PlatformView> stationPlatformViews = new ArrayList<PlatformView>();
-	private GridPane stationView;
+  private final String stationName;
+  private final ArrayList<Platform> stationPlatforms;
+  private ArrayList<PlatformView> stationPlatformViews = new ArrayList<PlatformView>();
 
-	public StationView(String stationName, ArrayList<Platform> stationPlatforms) {
-		this.stationName = stationName;
-		this.stationPlatforms = stationPlatforms;
-		buildStationPlatformViews();
-		buildStationView();
-	}
+  private GridPane stationView;
+  private final static double WIDTH = 225.0;
+  private Label title;
+  private HBox titleBox;
+  private int row = 0;
+  private int column = 0;
 
-	private void buildStationPlatformViews() {
-		for (Platform platform : stationPlatforms) {
-			PlatformView platView = new PlatformView(platform);
-			stationPlatformViews.add(platView);
-		}
-	}
-
-	private void buildStationView() {
-    stationView = new GridPane();
-    
-    Text stationTitle = new Text(stationName);
-    stationTitle.setFont(Font.font("Arial", FontWeight.BOLD, 25));
-    stationTitle.setFill(Color.WHITE);
-    
-    HBox hbBtn = new HBox();
-    hbBtn.setAlignment(Pos.CENTER);
-    hbBtn.getChildren().add(stationTitle);
-    hbBtn.setPadding(new Insets(0, 0, -5, 5));
-    stationView.add(hbBtn, 0, 0, 3, 1);
-    GridPane.setHalignment(hbBtn, HPos.CENTER);
-    int rowIndex = 1;
-    int colSpan = 0;
-    for (PlatformView platView : stationPlatformViews) {
-    	if(rowIndex >4){colSpan=3; rowIndex=1;}
-      stationView.add(platView.getPlatformNameLabel(), 0+colSpan, rowIndex);
-      stationView.add(platView.getCurrentMsgTypeLabel(), 1+colSpan, rowIndex);
-      stationView.add(platView.getCurrentMsgPlaytimeLabel(), 2+colSpan, rowIndex++);
-      stationView.add(platView.getCurrentMsgTextBox(), 0+colSpan, rowIndex++, 3, 1);
-      GridPane.setHalignment(platView.getCurrentMsgTextBox(), HPos.CENTER);
-    }
-    stationView.setPadding(new Insets(5, 5, 5, 5));
-    stationView.setStyle("-fx-background-color: skyblue ; -fx-border-color: black; -fx-border-radius: 5.0;-fx-background-radius: 5.0;");
-    stationView.setHgap(5);
-    //stationView.setGridLinesVisible(true);
-    JavaFxObservable.eventsOf(stationView, MouseEvent.MOUSE_ENTERED)
-        .map(me -> "-fx-background-color: f08080; -fx-border-color: black; -fx-border-radius: 5.0;-fx-background-radius: 5.0;").observeOn(JavaFxScheduler.platform())
-        .subscribe(stationView::setStyle);
-
-    JavaFxObservable.eventsOf(stationView, MouseEvent.MOUSE_EXITED)
-        .map(me -> "-fx-background-color: skyblue; -fx-border-color: black; -fx-border-radius: 5.0;-fx-background-radius: 5.0;").observeOn(JavaFxScheduler.platform())
-        .subscribe(stationView::setStyle);
-
+  public StationView(String stationName, ArrayList<Platform> stationPlatforms) {
+    this.stationName = stationName;
+    this.stationPlatforms = stationPlatforms;
+    storePlatformViews();
+    buildStationView();
+    addPlatformView();
   }
 
-	public GridPane getStationView() {
-		return stationView;
-	}
+  private void storePlatformViews() {
+    for (Platform platform : stationPlatforms) {
+      stationPlatformViews.add(platform.getPlatformView());
+    }
+  }
 
-	public ArrayList<PlatformView> getPlatformViews() {
-		return stationPlatformViews;
-	}
+  private void buildStationView() {
+    stationView = new GridPane();
+    titleBox = new HBox();
+    titleBox.setMaxWidth(WIDTH);
+    titleBox.setMinWidth(WIDTH);
+    titleBox.setAlignment(Pos.CENTER);
+    title = new Label(stationName);
+    title.setStyle("-fx-font-family: Arial; -fx-font-size: 18; -fx-font-weight: bolder;");
+    
+    title.setTextFill(Color.WHITE);
+    titleBox.getChildren().add(title);
+    stationView.add(titleBox, column, row++,2,1);
+    stationView.setStyle("-fx-background-color: skyblue; -fx-border-color:black;-fx-border-radius: 5.0;-fx-background-radius: 5.0;");
+    stationView.setPadding(new Insets(2, 2, 2, 2));
+    stationView.setMaxSize(225, 225);
+    
+    JavaFxObservable.eventsOf(stationView, MouseEvent.MOUSE_ENTERED)
+        .map(
+            me -> "-fx-background-color: f08080; -fx-border-color: black; -fx-border-radius: 5.0;-fx-background-radius: 5.0;")
+        .observeOn(JavaFxScheduler.platform()).subscribe(stationView::setStyle);
+
+    JavaFxObservable.eventsOf(stationView, MouseEvent.MOUSE_EXITED)
+        .map(
+            me -> "-fx-background-color: skyblue; -fx-border-color: black; -fx-border-radius: 5.0;-fx-background-radius: 5.0;")
+        .observeOn(JavaFxScheduler.platform()).subscribe(stationView::setStyle);
+
+  }
+  
+  private void addPlatformView() {
+    
+    for(PlatformView platform : stationPlatformViews){
+      if (row > 2) {
+        column++;
+        row=1;
+        titleBox.setMaxWidth(titleBox.getMaxWidth() + WIDTH);
+        titleBox.setMinWidth(titleBox.getMinWidth() + WIDTH);
+        titleBox.setAlignment(Pos.CENTER);
+        stationView.setPadding(new Insets(2, 6,2,6));
+      }
+      
+      stationView.add(platform.getPlatformView(), column, row++);
+    }
+   
+  }
+
+  public GridPane getStationView() {
+    return stationView;
+  }
+
+  public ArrayList<PlatformView> getPlatformViews() {
+    return stationPlatformViews;
+  }
+  
+  public static GridPane getBlankView(){
+    GridPane blank = new GridPane();
+    HBox blankBox = new HBox();
+    blankBox.setMaxWidth(WIDTH);
+    blankBox.setMinWidth(WIDTH);
+    blankBox.setAlignment(Pos.CENTER);
+    blank.add(blankBox, 0, 0);
+    blank.setPadding(new Insets(2, 2, 2, 2));
+    blank.setStyle("-fx-border-color: darkslategrey;-fx-border-radius: 5.0;-fx-background-radius: 5.0;");
+    blank.setMaxSize(225, 225);;
+    return blank;
+  }
 }

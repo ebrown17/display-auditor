@@ -17,9 +17,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import protobuf.JdssAuditor.DisplayData.AuditorMessageType;
 
 public class PlatformView {
@@ -28,13 +27,17 @@ public class PlatformView {
   private final String platformName;
   private final String stationName;
   private final Integer platformId;
-  private final Platform platform;
+  
+  private VBox platformBox;
+  private HBox platformInfoBox, platformDisplayBox;
+  
   private Label platformNameLabel;
-  private Label currentMsgTypeLabel;
-  private Label currentMsgTextLabel;
-  private Label currentMsgPlaytimeLabel;
+  private Label currentMessageTypeLabel;
+  private Label currentDisplayLabel;
+  private Label currentPlaytimeLabel;
   private Tooltip currentMsgToolTip;
   private Disposable msgPlaytimeDisposable;
+  
   private HBox currentMsgTextBox = new HBox();
   private HBox rowBox = new HBox();
 
@@ -42,54 +45,57 @@ public class PlatformView {
     this.platformName = platform.getName();
     this.stationName = platform.getStation();
     this.platformId = platform.getPlatId();
-    this.platform = platform;
-    platform.setPlatformView(this);
     generatePlatformLabels();
   }
 
   private void generatePlatformLabels() {
+    platformInfoBox = new HBox();
+    platformInfoBox.setMaxWidth(225);
+    platformInfoBox.setMinWidth(225);
+
     platformNameLabel = new Label(platformName);
-    platformNameLabel.setPadding(new Insets(0, 0, 0, 2));
-    platformNameLabel.setAlignment(Pos.CENTER);
-    platformNameLabel.setStyle("-fx-font-family: monospace; -fx-font-size: 12;");
-    platformNameLabel.setMinWidth(40);
-    platformNameLabel.setMaxWidth(40);
+    platformNameLabel.setAlignment(Pos.CENTER_RIGHT);
+    platformNameLabel.setMinWidth(50);
+    platformNameLabel.setMaxWidth(50);
+
+    currentMessageTypeLabel = new Label("UKNOWN_MSG_TYPE");
+    currentMessageTypeLabel.setAlignment(Pos.CENTER);
+    currentMessageTypeLabel.setMinWidth(135);
+    currentMessageTypeLabel.setMaxWidth(135);
+
+    currentPlaytimeLabel = new Label("0");
+    currentPlaytimeLabel.setAlignment(Pos.CENTER);
+    currentPlaytimeLabel.setMinWidth(40);
+    currentPlaytimeLabel.setMaxWidth(40);
+
+    platformInfoBox.getChildren().addAll(platformNameLabel, currentMessageTypeLabel, currentPlaytimeLabel);
+    platformInfoBox.setStyle("-fx-font-family: monospace;-fx-font-size: 12");
     
-    currentMsgTypeLabel = new Label("Uknown");
-    currentMsgTypeLabel.setStyle("-fx-font-family: monospace; -fx-font-size: 12;");
-    currentMsgTypeLabel.setPadding(new Insets(0, 0, 0, 5));
-    currentMsgTypeLabel.setMinWidth(100);
-    currentMsgTypeLabel.setMaxWidth(100);
-    currentMsgTypeLabel.setAlignment(Pos.CENTER);
+    platformDisplayBox = new HBox();
+    platformDisplayBox.setMaxWidth(225);
+    platformDisplayBox.setMinWidth(225);
+
+    currentDisplayLabel = new Label("No Messages Received");
+    currentDisplayLabel.setAlignment(Pos.CENTER);
+    currentDisplayLabel.setMinWidth(200);
+    currentDisplayLabel.setMaxWidth(200);
+    currentDisplayLabel.setMinHeight(60);
+    currentDisplayLabel.setMaxHeight(60);
+    currentDisplayLabel.setTextFill(Color.RED);
+    currentDisplayLabel.setStyle("-fx-background-color: black;");
     
-    currentMsgPlaytimeLabel = new Label("0");
-    currentMsgPlaytimeLabel.setMinWidth(40);
-    currentMsgPlaytimeLabel.setMaxWidth(40);
-    currentMsgPlaytimeLabel.setAlignment(Pos.CENTER_RIGHT);
-    
-    rowBox.setAlignment(Pos.CENTER);
-    rowBox.setMinWidth(180);
-    rowBox.setMaxWidth(180);
-    rowBox.getChildren().addAll(platformNameLabel,currentMsgTypeLabel,currentMsgPlaytimeLabel);
+    platformDisplayBox.getChildren().add(currentDisplayLabel);
+    platformDisplayBox.setAlignment(Pos.CENTER);
+    platformDisplayBox.setPadding(new Insets(2, 2, 2, 2));
+    platformBox = new VBox();
+    platformBox.getChildren().addAll(platformInfoBox,  platformDisplayBox);
 
     currentMsgToolTip = new Tooltip("");
-    currentMsgToolTip.setStyle("-fx-background-color: white; -fx-font-size: 12; -fx-text-fill: black;");
+    currentMsgToolTip.setStyle("-fx-background-color: white; -fx-font-size: 12; -fx-text-fill: black;"); 
+    currentDisplayLabel.setTooltip(currentMsgToolTip);
+  
 
-    currentMsgTextLabel = new Label("No messages received");
-    currentMsgTextLabel.setTooltip(currentMsgToolTip);
-    currentMsgTextLabel.setStyle("-fx-font-family: monospace; -fx-font-size: 10; -fx-font-weight: bold;");
-    currentMsgTextLabel.setTextFill(Color.RED);
-    
-    
-    currentMsgTextBox.setAlignment(Pos.CENTER);
-    currentMsgTextBox.getChildren().add(currentMsgTextLabel);
-    currentMsgTextBox.setMinHeight(60);
-    currentMsgTextBox.setMaxHeight(60);
-    currentMsgTextBox.setMinWidth(180);
-    currentMsgTextBox.setMaxWidth(180);
-    currentMsgTextBox.setStyle("-fx-background-color: black;-fx-border-color: black;-fx-border-width:2;");
-
-    JavaFxObservable.eventsOf(currentMsgTextLabel, MouseEvent.MOUSE_ENTERED).map(me -> currentMsgTextLabel.getText())
+    JavaFxObservable.eventsOf(currentDisplayLabel, MouseEvent.MOUSE_ENTERED).map(me -> currentDisplayLabel.getText())
         .observeOn(JavaFxScheduler.platform()).subscribe(currentMsgToolTip::setText);
 
 
@@ -106,101 +112,96 @@ public class PlatformView {
   public Integer getPlatformId() {
     return platformId;
   }
+  
+  public VBox getPlatformView() {
+    return platformBox;
+  }
 
-  public Label getPlatformNameLabel() {
+/*  public Label getPlatformNameLabel() {
     return platformNameLabel;
   }
 
-  public Label getCurrentMsgTypeLabel() {
-    return currentMsgTypeLabel;
+  public Label getcurrentMessageTypeLabel() {
+    return currentMessageTypeLabel;
   }
 
   public HBox getCurrentMsgTextBox() {
     return currentMsgTextBox;
   }
 
-  public Label getCurrentMsgPlaytimeLabel() {
-    return currentMsgPlaytimeLabel;
-  }
+  public Label getcurrentPlaytimeLabel() {
+    return currentPlaytimeLabel;
+  }*/
 
   /**
    * Calling this method also resets the message playtime interval calling
    * {@link #resetCurrentMsgPlaytime() resetCurrentMsgPlaytime}
    * 
-   * @param currentMsgType sets the {@code}Label currentMsgTypeLabel text to specified String <br>
-   *        This change will take place on RxJava's {@link io.reactivex.schedulers.Schedulers#computation()
-   *        Computation} Scheduler then will be observed on the main JavaFX Application
-   *        Thread.
+   * @param currentMsgType sets the {@code}Label currentMessageTypeLabel text to specified String <br>
+   *        This change will take place on RxJava's
+   *        {@link io.reactivex.schedulers.Schedulers#computation() Computation} Scheduler then will
+   *        be observed on the main JavaFX Application Thread.
    * 
    */
   public void setCurrentMsgType(String currentMsgType) {
     resetCurrentMsgPlaytime();
     Observable<String> observer = Observable.just(currentMsgType);
     observer.subscribeOn(Schedulers.computation()).observeOn(JavaFxScheduler.platform())
-        .subscribe(currentMsgTypeLabel::setText);
+        .subscribe(currentMessageTypeLabel::setText);
   }
 
   /**
    * This {@code}Label is used to simulate a message on a Platform Sign
    * 
-   * @param currentMsgText sets the {@code}Label currentMsgTextLabel text to specified String <br>
-   *        This change will take place on RxJava's {@link io.reactivex.schedulers.Schedulers#computation()
-   *        Computation} Scheduler then will be observed on the main JavaFX Application
-   *        Thread.
+   * @param currentMsgText sets the {@code}Label currentDisplayLabel text to specified String <br>
+   *        This change will take place on RxJava's
+   *        {@link io.reactivex.schedulers.Schedulers#computation() Computation} Scheduler then will
+   *        be observed on the main JavaFX Application Thread.
    * 
    */
-  public void setCurrentMsgText(AuditorMessageType type,String currentMsgText) {
-	  switch (type) {
+  public void setCurrentMsgText(AuditorMessageType type, String currentMsgText) {
+    switch (type) {
       case BOARDING_ADVICE:
-    	  //currentMsgTextLabel.setStyle("-fx-font-family: monospace; -fx-font-size: 12; -fx-font-weight: bold;");
-    	  Observable.just("-fx-font-family: monospace; -fx-font-size: 10; -fx-font-weight: bold;").observeOn(JavaFxScheduler.platform())
-          .subscribe(currentMsgTextLabel::setStyle);
+        Observable.just("-fx-font-family: monospace; -fx-font-size: 10; -fx-font-weight: bold;")
+            .observeOn(JavaFxScheduler.platform()).subscribe(currentDisplayLabel::setStyle);
         break;
       case SHORT_ETA:
-    	  //currentMsgTextLabel.setStyle("-fx-font-family: monospace; -fx-font-size: 10; -fx-font-weight: bold;");
-    	  Observable.just("-fx-font-family: monospace; -fx-font-size: 10; -fx-font-weight: bold;").observeOn(JavaFxScheduler.platform())
-          .subscribe(currentMsgTextLabel::setStyle);
+        Observable.just("-fx-font-family: monospace; -fx-font-size: 10; -fx-font-weight: bold;")
+            .observeOn(JavaFxScheduler.platform()).subscribe(currentDisplayLabel::setStyle);
         break;
       case FULL_ETA:
-    	 // currentMsgTextLabel.setStyle("-fx-font-family: monospace; -fx-font-size: 10; -fx-font-weight: bold;");
-    	  Observable.just("-fx-font-family: monospace; -fx-font-size: 10; -fx-font-weight: bold;").observeOn(JavaFxScheduler.platform())
-          .subscribe(currentMsgTextLabel::setStyle);
+        Observable.just("-fx-font-family: monospace; -fx-font-size: 10; -fx-font-weight: bold;")
+            .observeOn(JavaFxScheduler.platform()).subscribe(currentDisplayLabel::setStyle);
         break;
       case DESTINATION:
-    	  //.setStyle("-fx-font-family: monospace; -fx-font-size: 10; -fx-font-weight: bolder;");
-    	  Observable.just("-fx-font-family: monospace; -fx-font-size: 12; -fx-font-weight: bold;").observeOn(JavaFxScheduler.platform())
-          .subscribe(currentMsgTextLabel::setStyle);
+        Observable.just("-fx-font-family: monospace; -fx-font-size: 12; -fx-font-weight: bold;")
+            .observeOn(JavaFxScheduler.platform()).subscribe(currentDisplayLabel::setStyle);
         break;
       case NEXT_TRAIN:
-    	 // currentMsgTextLabel.setStyle("-fx-font-family: monospace; -fx-font-size: 12; -fx-font-weight: bolder;");
-    	  Observable.just("-fx-font-family: monospace; -fx-font-size: 12; -fx-font-weight: bold;").observeOn(JavaFxScheduler.platform())
-          .subscribe(currentMsgTextLabel::setStyle);
+        Observable.just("-fx-font-family: monospace; -fx-font-size: 12; -fx-font-weight: bold;")
+            .observeOn(JavaFxScheduler.platform()).subscribe(currentDisplayLabel::setStyle);
         break;
       case SCROLL_INFO:
-    	//  currentMsgTextLabel.setStyle("-fx-font-family: monospace; -fx-font-size: 12; -fx-font-weight: bold;");
-    	  Observable.just("-fx-font-family: monospace; -fx-font-size: 10; -fx-font-weight: bold;").observeOn(JavaFxScheduler.platform())
-          .subscribe(currentMsgTextLabel::setStyle);
+        Observable.just("-fx-font-family: monospace; -fx-font-size: 10; -fx-font-weight: bold;")
+            .observeOn(JavaFxScheduler.platform()).subscribe(currentDisplayLabel::setStyle);
         break;
       case TIME:
-    	//  currentMsgTextLabel.setStyle("-fx-font-family: monospace; -fx-font-size: 12; -fx-font-weight: bolder;");
-    	  Observable.just("-fx-font-family: monospace; -fx-font-size: 12; -fx-font-weight: bolder;").observeOn(JavaFxScheduler.platform())
-          .subscribe(currentMsgTextLabel::setStyle);
+        Observable.just("-fx-font-family: monospace; -fx-font-size: 12; -fx-font-weight: bolder;")
+            .observeOn(JavaFxScheduler.platform()).subscribe(currentDisplayLabel::setStyle);
         break;
       case INFO:
-    	//  currentMsgTextLabel.setStyle("-fx-font-family: monospace; -fx-font-size: 12; -fx-font-weight: bold;");
-    	  Observable.just("-fx-font-family: monospace; -fx-font-size: 10; -fx-font-weight: bold;").observeOn(JavaFxScheduler.platform())
-          .subscribe(currentMsgTextLabel::setStyle);
+        Observable.just("-fx-font-family: monospace; -fx-font-size: 10; -fx-font-weight: bold;")
+            .observeOn(JavaFxScheduler.platform()).subscribe(currentDisplayLabel::setStyle);
         break;
       case OUT_OF_SERVICE:
-    	 // currentMsgTextLabel.setStyle("-fx-font-family: monospace; -fx-font-size: 12; -fx-font-weight: bolder;");
-    	  Observable.just("-fx-font-family: monospace; -fx-font-size: 12; -fx-font-weight: bolder;").observeOn(JavaFxScheduler.platform())
-          .subscribe(currentMsgTextLabel::setStyle);
+        Observable.just("-fx-font-family: monospace; -fx-font-size: 12; -fx-font-weight: bolder;")
+            .observeOn(JavaFxScheduler.platform()).subscribe(currentDisplayLabel::setStyle);
         break;
       default:
         break;
     }
-	   Observable.just(currentMsgText).subscribeOn(Schedulers.computation()).observeOn(JavaFxScheduler.platform())
-       .subscribe(currentMsgTextLabel::setText);
+    Observable.just(currentMsgText).subscribeOn(Schedulers.computation()).observeOn(JavaFxScheduler.platform())
+        .subscribe(currentDisplayLabel::setText);
   }
 
   /**
@@ -211,12 +212,12 @@ public class PlatformView {
   private void resetCurrentMsgPlaytime() {
     if (msgPlaytimeDisposable == null) {
       msgPlaytimeDisposable = Observable.interval(1, TimeUnit.SECONDS, Schedulers.computation()).map(l -> l.toString())
-          .observeOn(JavaFxScheduler.platform()).subscribe(currentMsgPlaytimeLabel::setText);
+          .observeOn(JavaFxScheduler.platform()).subscribe(currentPlaytimeLabel::setText);
     }
     else {
       msgPlaytimeDisposable.dispose();
       msgPlaytimeDisposable = Observable.interval(1, TimeUnit.SECONDS, Schedulers.computation()).map(l -> l.toString())
-          .observeOn(JavaFxScheduler.platform()).subscribe(currentMsgPlaytimeLabel::setText);
+          .observeOn(JavaFxScheduler.platform()).subscribe(currentPlaytimeLabel::setText);
     }
   }
 

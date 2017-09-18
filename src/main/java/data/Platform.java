@@ -13,6 +13,7 @@ public class Platform {
 		this.platId = platId;
 		this.name = name;
 		this.station = station;
+		this.platformView = new PlatformView(this);
 	}
 
 	public Integer getPlatId() {
@@ -33,10 +34,6 @@ public class Platform {
 	
 	public PlatformView getPlatformView(){
 		return platformView;
-	}
-	
-	public void setPlatformView(PlatformView platformView){
-		this.platformView = platformView;
 	}
 
 	protected void setStationView(StationView stationView){
