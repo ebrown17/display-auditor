@@ -143,8 +143,10 @@ public class App extends Application {
     row1.getChildren().add(stationViews.get("C20").getStationView());
     row1.getChildren().add(stationViews.get("C30").getStationView());
     row1.getChildren().add(stationViews.get("C40").getStationView());
-    row1.getChildren().add(StationView.getBlankView());
-    row1.getChildren().add(StationView.getBlankView());
+    row1.getChildren().add(stationViews.get("C50").getStationView());
+    row1.getChildren().add(stationViews.get("C60").getStationView());
+    row1.getChildren().add(stationViews.get("C70").getStationView());
+    row1.getChildren().add(stationViews.get("C80").getStationView());  
 
     HBox row2 = new HBox();
     row2.setSpacing(2);
@@ -155,10 +157,6 @@ public class App extends Application {
     row2.getChildren().add(StationView.getBlankView());
     row2.getChildren().add(stationViews.get("K30").getStationView());
     row2.getChildren().add(StationView.getBlankView());
-    row2.getChildren().add(stationViews.get("C50").getStationView());
-    row2.getChildren().add(stationViews.get("C60").getStationView());
-    row2.getChildren().add(stationViews.get("C70").getStationView());
-    row2.getChildren().add(stationViews.get("C80").getStationView());
     row2.getChildren().add(StationView.getBlankView());
     
     HBox row3 = new HBox();
@@ -167,14 +165,21 @@ public class App extends Application {
     row3.getChildren().add(StationView.getBlankView());
     row3.getChildren().add(StationView.getBlankView());
     row3.getChildren().add(StationView.getBlankView());
+    row3.getChildren().add(StationView.getBlankView());
     row3.getChildren().add(stationViews.get("K20").getStationView());
-    row3.getChildren().add(StationView.getBlankView());
-    row3.getChildren().add(StationView.getBlankView());
-    row3.getChildren().add(StationView.getBlankView());
-    row3.getChildren().add(StationView.getBlankView());
-    row3.getChildren().add(StationView.getBlankView());    
-    row3.getChildren().add(stationViews.get("M80").getStationView());
-    row3.getChildren().add(stationViews.get("M90").getStationView());
+    
+    HBox row4 = new HBox();
+    row4.setSpacing(2);
+    row4.getChildren().add(StationView.getBlankView());
+    row4.getChildren().add(StationView.getBlankView());
+    row4.getChildren().add(StationView.getBlankView());
+    row4.getChildren().add(StationView.getBlankView());
+    row4.getChildren().add(StationView.getBlankView());
+    row4.getChildren().add(stationViews.get("K10").getStationView());
+    
+    
+/*    row3.getChildren().add(stationViews.get("M80").getStationView());
+    row3.getChildren().add(stationViews.get("M90").getStationView());*/
     /*// addBlankGrids(2, tile);
 
     tile.add(stationViews.get("K10").getStationView());
@@ -214,7 +219,7 @@ public class App extends Application {
     tile.add(stationViews.get("S50").getStationView());*/
 
     VBox boxtest = new VBox();
-    boxtest.getChildren().addAll(row1, row2, row3);
+    boxtest.getChildren().addAll(row1, row2, row3,row4);
     boxtest.setSpacing(2);
     tile.add(boxtest, 0, 0);
     
