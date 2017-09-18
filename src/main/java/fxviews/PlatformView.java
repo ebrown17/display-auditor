@@ -75,7 +75,7 @@ public class PlatformView {
     platformDisplayBox.setMaxWidth(225);
     platformDisplayBox.setMinWidth(225);
 
-    currentDisplayLabel = new Label("No Messages Received");
+    currentDisplayLabel = new Label("No Messages Received ");
     currentDisplayLabel.setAlignment(Pos.CENTER);
     currentDisplayLabel.setMinWidth(200);
     currentDisplayLabel.setMaxWidth(200);
