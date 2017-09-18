@@ -38,8 +38,6 @@ public class App extends Application {
 
 	private final static Logger logger = LoggerFactory.getLogger("App");
 	private boolean fullScreen = false;
-	private static ArrayList<GridPane> gridpanes = new ArrayList<GridPane>();
-	private static ArrayList<PlatformView> pv = new ArrayList<PlatformView>();
 	private static Server server;
 
 	private ScrollPane scroll;

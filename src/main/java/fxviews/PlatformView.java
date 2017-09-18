@@ -251,7 +251,7 @@ public class PlatformView {
 	 *            JavaFX Application Thread.
 	 * 
 	 */
-	public void setCurrentMsgText(AuditorMessageType type, String currentMsgText) {
+	private void setCurrentMsgText(AuditorMessageType type, String currentMsgText) {
 		switch (type) {
 		case BOARDING_ADVICE:
 			Observable
