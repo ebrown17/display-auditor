@@ -79,6 +79,10 @@ public class StationView {
   
   private void addPlatformView() {
     
+	  if(stationPlatformViews.size()==3 && stationName.contains("K")){
+    	  row++;
+      }
+	  
     for(PlatformView platform : stationPlatformViews){
       if (row > 2) {
         column++;
@@ -88,7 +92,7 @@ public class StationView {
         titleBox.setAlignment(Pos.CENTER);
         stationView.setPadding(new Insets(2, 6,2,6));
       }
-      
+    	  
       stationView.add(platform.getPlatformView(), column, row++);
     }
    

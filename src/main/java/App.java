@@ -13,7 +13,7 @@ import io.reactivex.rxjavafx.observables.JavaFxObservable;
 import javafx.application.Application;
 import javafx.css.CssMetaData;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
+import javafx.geometry.Orientation;	
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
@@ -40,8 +40,7 @@ public class App extends Application {
   private static ArrayList<PlatformView> pv = new ArrayList<PlatformView>();
   private static Server server;
 
-  ScrollPane scroll;
-  HBox testBox;
+  private ScrollPane scroll;
   private static Double MAX_WIDTH;
   private static Double MAX_HEIGHT;
 
@@ -126,7 +125,7 @@ public class App extends Application {
 
     HBox row1 = new HBox();
     row1.setSpacing(2);
-
+    
     row1.getChildren().add(stationViews.get("R60").getStationView());
     row1.getChildren().add(stationViews.get("R50").getStationView());
     row1.getChildren().add(stationViews.get("R40").getStationView());
@@ -151,7 +150,6 @@ public class App extends Application {
     row3.getChildren().add(StationView.getBlankView());
     row3.getChildren().add(StationView.getBlankView());
     row3.getChildren().add(StationView.getBlankView());
-    row3.getChildren().add(StationView.getBlankView());
     row3.getChildren().add(stationViews.get("K20").getStationView());
 
     HBox row4 = new HBox();
@@ -163,9 +161,7 @@ public class App extends Application {
     row4.getChildren().add(StationView.getBlankView());
     row4.getChildren().add(StationView.getBlankView());
     row4.getChildren().add(StationView.getBlankView());
-    row4.getChildren().add(StationView.getBlankView());
     row4.getChildren().add(stationViews.get("K10").getStationView());
-    row4.getChildren().add(StationView.getBlankView());
     row4.getChildren().add(StationView.getBlankView());
     row4.getChildren().add(StationView.getBlankView());
     row4.getChildren().add(StationView.getBlankView());
@@ -176,7 +172,6 @@ public class App extends Application {
     HBox row5 = new HBox();
     row5.setSpacing(2);
 
-    row5.getChildren().add(stationViews.get("M80").getStationView());
     row5.getChildren().add(stationViews.get("M70").getStationView());
     row5.getChildren().add(stationViews.get("M60").getStationView());
     row5.getChildren().add(stationViews.get("M50").getStationView());
@@ -196,7 +191,8 @@ public class App extends Application {
 
     HBox row6 = new HBox();
     row6.setSpacing(2);
-    row6.getChildren().add(stationViews.get("M90").getStationView());
+    row6.getChildren().add(stationViews.get("M80").getStationView());
+    
     row6.getChildren().add(StationView.getBlankView());
     row6.getChildren().add(StationView.getBlankView());
     row6.getChildren().add(StationView.getBlankView());
@@ -214,6 +210,7 @@ public class App extends Application {
 
     HBox row8 = new HBox();
     row8.setSpacing(2);
+    row8.getChildren().add(stationViews.get("M90").getStationView());
     row8.getChildren().add(stationViews.get("W10").getStationView());
     row8.getChildren().add(stationViews.get("W20").getStationView());
     row8.getChildren().add(stationViews.get("W30").getStationView());
@@ -221,6 +218,7 @@ public class App extends Application {
 
     HBox row7 = new HBox();
     row7.setSpacing(2);
+    row7.getChildren().add(StationView.getBlankView());
     row7.getChildren().add(StationView.getBlankView());
     row7.getChildren().add(StationView.getBlankView());
     row7.getChildren().add(StationView.getBlankView());
