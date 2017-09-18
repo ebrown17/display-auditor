@@ -1,25 +1,27 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import data.Platform;
 import data.StationPlatformAndViewCache;
 import fxviews.PlatformView;
 import fxviews.StationView;
 import io.reactivex.rxjavafx.observables.JavaFxObservable;
 import javafx.application.Application;
+import javafx.css.CssMetaData;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -120,15 +122,7 @@ public class App extends Application {
     MAX_HEIGHT = tile.getHeight();
     tile.setStyle("-fx-background-color: darkslategrey;");
 
-    // tile.add(paneList.get(i + j), j, i);
-    // GridPane.setMargin(paneList.get(i + j), new Insets(2, 2, 2, 2));
-    int column = 0;
-    int row = 0;
-
-
     Map<String, StationView> stationViews = StationPlatformAndViewCache.INSTANCE.getStationViewCache();
-
-
 
     HBox row1 = new HBox();
     row1.setSpacing(2);
@@ -149,19 +143,6 @@ public class App extends Application {
     row1.getChildren().add(stationViews.get("C70").getStationView());
     row1.getChildren().add(stationViews.get("C80").getStationView());
 
-    /*
-     * HBox row2 = new HBox(); row2.setSpacing(2);
-     * row2.getChildren().add(StationView.getBlankView());
-     * row2.getChildren().add(StationView.getBlankView());
-     * row2.getChildren().add(StationView.getBlankView());
-     * row2.getChildren().add(StationView.getBlankView());
-     * row2.getChildren().add(StationView.getBlankView());
-     * row2.getChildren().add(StationView.getBlankView());
-     * row2.getChildren().add(StationView.getBlankView());
-     * row2.getChildren().add(stationViews.get("K30").getStationView());
-     */
-
-
     HBox row3 = new HBox();
     row3.setSpacing(2);
     row3.getChildren().add(StationView.getBlankView());
@@ -175,10 +156,7 @@ public class App extends Application {
 
     HBox row4 = new HBox();
     row4.setSpacing(2);
-    /*
-     * row4.getChildren().add(stationViews.get("W20").getStationView());
-     * row4.getChildren().add(stationViews.get("W10").getStationView());
-     */
+
     row4.getChildren().add(StationView.getBlankView());
     row4.getChildren().add(StationView.getBlankView());
     row4.getChildren().add(StationView.getBlankView());
@@ -261,59 +239,15 @@ public class App extends Application {
     MAX_WIDTH = tile.getWidth();
     MAX_HEIGHT = tile.getHeight();
 
-    testBox = new HBox();
-    testBox.setAlignment(Pos.CENTER);
-
     scroll = new ScrollPane();
-    testBox.getChildren().add(tile);
-    scroll.setContent(testBox);
+    scroll.setContent(tile);
     scroll.setFitToHeight(true);
     scroll.setFitToWidth(true);
+    scroll.setPannable(true);
+    // scroll.getStylesheets().add(App.class.getResource("style.css").toExternalForm());
+
     StackPane pane = new StackPane();
     pane.getChildren().add(scroll);
-
-   /* tile.setOnMouseClicked(e -> {
-      if (e.getButton() == MouseButton.PRIMARY) {
-        pane.getChildren().remove(scroll);
-
-
-        tile.setScaleX(tile.getScaleX() * 2);
-        tile.setScaleY(tile.getScaleY() * 2);
-
-        tile.setMinWidth(tile.getWidth() * 2);
-        tile.setMinHeight(tile.getHeight() * 2);
-        tile.setTranslateX(tile.getWidth());
-        tile.setTranslateY(tile.getHeight());
-
-        testBox = new HBox();
-        testBox.setAlignment(Pos.CENTER);
-        scroll = new ScrollPane();
-        testBox.getChildren().add(tile);
-        scroll.setContent(testBox);
-        pane.getChildren().add(scroll);
-
-
-      }
-      else {
-        pane.getChildren().remove(scroll);
-        tile.setScaleX(1);
-        tile.setScaleY(1);
-        tile.setMinWidth(MAX_WIDTH);
-        tile.setMinHeight(MAX_HEIGHT);
-        tile.setTranslateX(0);
-        tile.setTranslateY(0);
-
-        testBox = new HBox();
-        testBox.setAlignment(Pos.CENTER);
-        scroll = new ScrollPane();
-        testBox.getChildren().add(tile);
-        scroll.setContent(testBox);
-
-        pane.getChildren().add(scroll);
-
-      }
-
-    });*/
 
     Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
     Scene scene = new Scene(pane, primaryScreenBounds.getWidth(), primaryScreenBounds.getHeight());
@@ -322,13 +256,11 @@ public class App extends Application {
     primaryStage.show();
     primaryStage.setOnCloseRequest(ce -> shutdownApp());
 
-    
-      JavaFxObservable.eventsOf(tile, MouseEvent.MOUSE_CLICKED) .subscribe(me ->
-      primaryStage.setFullScreen(fullScreen = !fullScreen));
-      
-      JavaFxObservable.eventsOf(scene, KeyEvent.KEY_RELEASED).map(KeyEvent::getCode) .subscribe(key
-      -> handleKeyevent(key));
-     
+    JavaFxObservable.eventsOf(tile, MouseEvent.MOUSE_CLICKED)
+        .subscribe(mc -> handleMouseClick(mc));
+
+    JavaFxObservable.eventsOf(scene, KeyEvent.KEY_RELEASED).map(KeyEvent::getCode)
+        .subscribe(key -> handleKeyevent(key, primaryStage));
 
   }
 
@@ -347,14 +279,16 @@ public class App extends Application {
       System.exit(0);
     }
 
-
   }
 
-  private void handleKeyevent(KeyCode code) {
+  private void handleKeyevent(KeyCode code, Stage primaryStage) {
 
     switch (code) {
       case SPACE:
         shutdownApp();
+        break;
+      case F11:
+        primaryStage.setFullScreen(fullScreen = !fullScreen);
         break;
       default:
         break;
@@ -363,17 +297,51 @@ public class App extends Application {
 
   }
 
-  /*
-   * private void test(Stage primaryStage, TilePane tile, GridPane grid) {
-   * primaryStage.setFullScreen(fullScreen = !fullScreen); if (fullScreen) { for (GridPane p :
-   * gridpanes) { if (grid != p) { tile.remove(p); } } Rectangle2D bounds =
-   * Screen.getPrimary().getVisualBounds(); grid.setMinWidth(bounds.getMaxX());
-   * grid.setMinHeight(bounds.getMaxY());
-   * 
-   * } else { tile.remove(grid); for (GridPane p : gridpanes) { p.setMinWidth(p.getPrefWidth());
-   * p.setMinHeight(p.getPrefHeight()); tile.add(p); }
-   * 
-   * } primaryStage.centerOnScreen(); }
-   */
+  private void handleMouseClick(MouseEvent event) {
+
+    switch (event.getButton()) {
+      case PRIMARY:
+        // pane.getChildren().remove(scroll);
+        //
+        //
+        // tile.setScaleX(tile.getScaleX() * 2);
+        // tile.setScaleY(tile.getScaleY() * 2);
+        //
+        // tile.setMinWidth(tile.getWidth() * 2);
+        // tile.setMinHeight(tile.getHeight() * 2);
+        // tile.setTranslateX(tile.getWidth());
+        // tile.setTranslateY(tile.getHeight());
+        //
+        // testBox = new HBox();
+        // testBox.setAlignment(Pos.CENTER);
+        // scroll = new ScrollPane();
+        // testBox.getChildren().add(tile);
+        // scroll.setContent(testBox);
+        // pane.getChildren().add(scroll);
+        break;
+      case SECONDARY:
+
+        // pane.getChildren().remove(scroll);
+        // tile.setScaleX(1);
+        // tile.setScaleY(1);
+        // tile.setMinWidth(MAX_WIDTH);
+        // tile.setMinHeight(MAX_HEIGHT);
+        // tile.setTranslateX(0);
+        // tile.setTranslateY(0);
+        //
+        // testBox = new HBox();
+        // testBox.setAlignment(Pos.CENTER);
+        // scroll = new ScrollPane();
+        // testBox.getChildren().add(tile);
+        // scroll.setContent(testBox);
+        //
+        // pane.getChildren().add(scroll);
+        break;
+      default:
+        break;
+
+    }
+
+  }
 
 }

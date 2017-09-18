@@ -36,10 +36,7 @@ public class PlatformView {
   private Label currentDisplayLabel;
   private Label currentPlaytimeLabel;
   private Tooltip currentMsgToolTip;
-  private Disposable msgPlaytimeDisposable;
-  
-  private HBox currentMsgTextBox = new HBox();
-  private HBox rowBox = new HBox();
+  private Disposable msgPlaytimeDisposable; 
 
   public PlatformView(Platform platform) {
     this.platformName = platform.getName();
@@ -82,7 +79,7 @@ public class PlatformView {
     currentDisplayLabel.setMinHeight(60);
     currentDisplayLabel.setMaxHeight(60);
     currentDisplayLabel.setTextFill(Color.RED);
-    currentDisplayLabel.setStyle("-fx-background-color: black;");
+    currentDisplayLabel.setStyle("-fx-background-color: black;-fx-font-size: 12;");
     
     platformDisplayBox.getChildren().add(currentDisplayLabel);
     platformDisplayBox.setAlignment(Pos.CENTER);
@@ -116,22 +113,6 @@ public class PlatformView {
   public VBox getPlatformView() {
     return platformBox;
   }
-
-/*  public Label getPlatformNameLabel() {
-    return platformNameLabel;
-  }
-
-  public Label getcurrentMessageTypeLabel() {
-    return currentMessageTypeLabel;
-  }
-
-  public HBox getCurrentMsgTextBox() {
-    return currentMsgTextBox;
-  }
-
-  public Label getcurrentPlaytimeLabel() {
-    return currentPlaytimeLabel;
-  }*/
 
   /**
    * Calling this method also resets the message playtime interval calling
